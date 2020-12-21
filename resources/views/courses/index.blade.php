@@ -1,49 +1,48 @@
 @extends('base')
 
 @section('content')
+@if($info = Session::get('info'))
 
-<style>
+<div class="card">
+    <div class="card-body bg-success text-white">
+        {{$info}}
+    </div>
+</div>
 
-    th {
-        background-color: blue;
-        color: white;
-    }
+@endif
 
-    tr:hover {
-        background-color: blue;
-    }
-    
-</style>
+<div class="float-right">
+    <a href="{{url('courses/create')}}" class="btn btn-primary">
+        Add New Course
+    </a>
+</div>
 
-<h1>Courses</h1>
-<table class="table table-bordered table-striped table-sm">
-    <thead>
-
-        <tr>
-            <th>ID Number</th>
+    <h1>Courses</h1>
+    <table class="table table-bordered table-striped table-sm">
+        <thead>
             <th>Name</th>
             <th>Description</th>
             <th>Start</th>
             <th>End</th>
             <th>Instructor</th>
-        </tr>
-        
-    </thead>
+            <th>&nbsp;</th>
+        </thead>
+        <tbody>
+            @foreach($courses as $c)
 
-    <tbody>
-        @foreach($courses as $course)
+            <tr>
+                <td>{{$c->name}}</td>
+                <td>{{$c->description}}</td>
+                <td>{{$c->start}}</td>
+                <td>{{$c->end}}</td>
+                <td>{{$c->instructor->user->lname}}, {{$c->instructor->user->fname}}</td>
+                <td>
+                    <a href="{{url('/courses/edit', ['id'=> $c])}}" class="btn btn-secondary btn-sm"> ... </a>
+                </td>
+            </tr>
 
-        <tr>
-            <td>{{$course->id}}</td>
-            <td>{{$course->name}}</td>
-            <td>{{$course->description}}</td>
-            <td>{{$course->start}}</td>
-            <td>{{$course->end}}</td>
-            <td>{{$course->instructors}}</td>
-        </tr>
-
-        @endforeach
-    </tbody>
-</table>
-
-@stop
+            @endforeach
+        </tbody>
+    </table>
+    {{ $courses->links() }}
+@endsection

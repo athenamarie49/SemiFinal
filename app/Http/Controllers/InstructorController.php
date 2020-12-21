@@ -7,42 +7,49 @@ use App\Instructor;
 
 class InstructorController extends Controller
 {
-    public function index(){
-        $instructors = Instructor::join('users', 'users.id', '=', 'instructors.user_id')
-                        ->select('users.lname', 'users.fname', 'instructors.*')
-                        ->orderByRaw('lname', 'fname')->get();
+    public function index() {
+        $instructors = Instructor::Latest()->paginate(10);
         return view('instructors.index', ['instructors'=>$instructors]);
     }
 
-    public function create(){
+    public function create() {
         return view('instructors.create');
     }
 
-    public function store(Request $request){
+    public function store(Request $request) {
         $this->validate($request, [
-            'user_id'=>'required|numeric',
-            'aoe'=>'required',
-            'rating'=>'required|numeric'
+            'user_id' => 'required|numeric',
+            'aoe' => 'required',
+            'rating' => 'required|numeric',
         ]);
 
-        Instructor::create($request->all());
+        Instructor::create([
+            'user_id' => $request['user_id'],
+            'aoe' => $request['aoe'],
+            'rating' => $request['rating'],
+        ]);
 
-        return redirect('/instructors')->with('info', 'A new instructor has been created');
+
+        return redirect('/instructors')->with('info', 'New instructor has been added.');
     }
-
-    public function edit($id){
+    public function edit($id) {
         $instructor = Instructor::find($id);
-        
 
         return view('instructors.edit', ['instructor'=>$instructor]);
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id) {
         $instructor = Instructor::find($id);
-        
+
         $instructor->update($request->all());
 
-        return redirect('/instructors')->with('info', "The record of " . $instructor->user->lname . " has been updated.");
+        return redirect('/instructors')->with('info', "The record of $instructor->user_id $instructor->aoe has been updated. ");
+    }
+    public function delete(Request $request){
+        $instructorId = $request['instructor_id'];
+        $instructor = Instructor::find($instructorId);
+        $name = $instructor->user->fname . " " . $instructor->user->lname;
+        $instructor->delete();
+        return  redirect('/instructors')->with('info', "The record of $name has been deleted successfully.");
     }
 }
-

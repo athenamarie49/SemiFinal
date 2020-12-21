@@ -15,11 +15,11 @@ class CreateLearnersTable extends Migration
     {
         Schema::create('learners', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('user_id')->unsigned()->unique();
             $table->string('level'); //novice, intermediate, advanced
             $table->string('status');//account status whether active, inactive, suspended
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
